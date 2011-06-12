@@ -1,0 +1,8 @@
+Sprite Clipper is a java program for identifying and extracting video game sprites
+from sprite sheets.  Blob detection is used to identify sprites, then the
+identified sprites can be merge or reshaped using some simple editing functionality.
+The sprites can then be saved to a directory, or they can be packed into a new,
+dense sprite sheet that also has an accompanying definition file.
+
+More info and basic guide available at:
+http://fluffynukeit.com/software/sprite-clipper/
