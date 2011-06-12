@@ -67,8 +67,10 @@ public class SpriteClipper extends Observable {
     }
 
 
-    public SpriteClipper(){
-        SpriteClipFinder[] finders = {new Connectivity8()};
+    public SpriteClipper() {
+        SpriteClipFinder[] finders = {  new Connectivity8(),
+                                        new Connectivity8(5),
+                                        new Connectivity8(10)};
         BackgroundFilter[] filters = {new CornerFilter()};
         SpritePacker[] packers = {new HRPacker(3)};
 

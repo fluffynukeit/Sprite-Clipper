@@ -57,7 +57,7 @@ public class Connectivity8 implements SpriteClipFinder {
     public Connectivity8() {
         halfEdge = 1;
     }
-    public Connectivity8(int _halfEdge) throws Exception {
+    public Connectivity8(int _halfEdge) {
         setHalfEdge(_halfEdge);
     }
 
@@ -67,12 +67,23 @@ public class Connectivity8 implements SpriteClipFinder {
 
     @Override
     public String toString(){
-        return "8 connectivity";
+        if (halfEdge == 1) {
+            return "8 connectivity";
+        }
+        else {
+            return "8 conn. (" + halfEdge + "px HE)";
+        }
+        
     }
 
-    public final void setHalfEdge(int _halfEdge) throws Exception {
+    public final void setHalfEdge(int _halfEdge) {
         if (_halfEdge < 1) {
-            throw new Exception("Cannot set 8 connectivity half edge to less than 1.");
+            
+            /*
+             * We could do a throws Exception here instead of clipping to 1, but then
+             * propgating the exception up the chain becomes a big pain...
+             */
+            _halfEdge = 1;
         }
         halfEdge = _halfEdge;
     }
