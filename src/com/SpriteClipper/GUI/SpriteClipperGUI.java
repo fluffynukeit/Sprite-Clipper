@@ -701,7 +701,7 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
     private void packButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_packButtonActionPerformed
 
         JFileChooser chooser = new JFileChooser(currentDirectory);
-        chooser.setDialogTitle("Prove name for sprite PNG pack");
+        chooser.setDialogTitle("Provide a name for sprite PNG pack");
         int returnVal = chooser.showSaveDialog(this);
         if(returnVal == JFileChooser.APPROVE_OPTION) {
             File packFile = chooser.getSelectedFile();
