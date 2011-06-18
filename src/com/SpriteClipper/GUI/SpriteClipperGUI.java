@@ -92,57 +92,60 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
     }
 
     public void update(Observable obs, Object obj) {
+        try {
+            SpriteClipper.SpriteClipperEvent event = (SpriteClipper.SpriteClipperEvent) obj;
 
-        SpriteClipper.SpriteClipperEvent event = (SpriteClipper.SpriteClipperEvent) obj;
+            switch (event) {
+                case SPRITESHEET_CHANGED:
+                    SpriteSheet newSheet = spriteClipper.getSpriteSheet();
+                    SpriteSheetPane newSSPane = new SpriteSheetPane(newSheet);
+                    spriteSheetScrollPane.setViewportView(newSSPane);
+                    closeButton.setEnabled(true);
+                    findSpritesButton.setEnabled(true);
+                    sheetPanel.setBorder(new TitledBorder("Sprite Sheet (" +
+                                                                    newSheet.getFile() +
+                                                                    ")"));
+                    break;
+                case SPRITESHEET_CLEARED:
+                    spriteSheetScrollPane.setViewportView(null);
+                    closeButton.setEnabled(false);
+                    findSpritesButton.setEnabled(false);
+                    sheetPanel.setBorder(new TitledBorder("Sprite Sheet"));
+                    setSpriteControlsEnabled(false);
+                    break;
+                case FINDER_CHANGED:
+                    connSelector.setSelectedItem(spriteClipper.getFinder());
+                    break;
+                case FILTER_CHANGED:
+                    filterSelector.setSelectedItem(spriteClipper.getBackgroundFilter());
+                    break;
+                case PACKER_CHANGED:
+                    packerSelector.setSelectedItem(spriteClipper.getSpritePacker());
+                    break;
+                case CLIPS_FOUND:
+                    SpriteSheetPane ssPane = (SpriteSheetPane)
+                                             spriteSheetScrollPane.getViewport().getView();
+                    ssPane.markSpriteClips(spriteClipper.getSpriteSheet().getClips());
+                    setSpriteControlsEnabled(true);
+                    break;
+                case STORED_ADDED:
+                case STORED_REMOVED:
+                    DefaultListModel listModel = (DefaultListModel) clippedList.getModel();
+                    listModel.clear();
+                    List<SpriteClip> storedClips = spriteClipper.getStoredClips();
+                    for (SpriteClip currentClip : storedClips) {
+                        listModel.addElement(currentClip);
+                    }
+                    clippedList.ensureIndexIsVisible(listModel.getSize()-1);
+                    SpriteSheetPane ssPaneAdded = (SpriteSheetPane)
+                                             spriteSheetScrollPane.getViewport().getView();
+                    ssPaneAdded.setAllSelected(false);
+                    break;
 
-        switch (event) {
-            case SPRITESHEET_CHANGED:
-                SpriteSheet newSheet = spriteClipper.getSpriteSheet();
-                SpriteSheetPane newSSPane = new SpriteSheetPane(newSheet);
-                spriteSheetScrollPane.setViewportView(newSSPane);
-                closeButton.setEnabled(true);
-                findSpritesButton.setEnabled(true);
-                sheetPanel.setBorder(new TitledBorder("Sprite Sheet (" +
-                                                                newSheet.getFile() +
-                                                                ")"));
-                break;
-            case SPRITESHEET_CLEARED:
-                spriteSheetScrollPane.setViewportView(null);
-                closeButton.setEnabled(false);
-                findSpritesButton.setEnabled(false);
-                sheetPanel.setBorder(new TitledBorder("Sprite Sheet"));
-                setSpriteControlsEnabled(false);
-                break;
-            case FINDER_CHANGED:
-                connSelector.setSelectedItem(spriteClipper.getFinder());
-                break;
-            case FILTER_CHANGED:
-                filterSelector.setSelectedItem(spriteClipper.getBackgroundFilter());
-                break;
-            case PACKER_CHANGED:
-                packerSelector.setSelectedItem(spriteClipper.getSpritePacker());
-                break;
-            case CLIPS_FOUND:
-                SpriteSheetPane ssPane = (SpriteSheetPane)
-                                         spriteSheetScrollPane.getViewport().getView();
-                ssPane.markSpriteClips(spriteClipper.getSpriteSheet().getClips());
-                setSpriteControlsEnabled(true);
-                break;
-            case STORED_ADDED:
-            case STORED_REMOVED:
-                DefaultListModel listModel = (DefaultListModel) clippedList.getModel();
-                listModel.clear();
-                List<SpriteClip> storedClips = spriteClipper.getStoredClips();
-                for (SpriteClip currentClip : storedClips) {
-                    listModel.addElement(currentClip);
-                }
-                clippedList.ensureIndexIsVisible(listModel.getSize()-1);
-                SpriteSheetPane ssPaneAdded = (SpriteSheetPane)
-                                         spriteSheetScrollPane.getViewport().getView();
-                ssPaneAdded.setAllSelected(false);
-                break;
-
-            default:
+                default:
+            }
+        } catch (Exception e) {
+            exceptionDialog(e);
         }
 
     }
@@ -599,40 +602,57 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
     }//GEN-LAST:event_removeButtonActionPerformed
 
     private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
-        spriteClipper.clearSpriteSheet();
+         try {
+            spriteClipper.clearSpriteSheet();
+         } catch (Exception e) {
+            exceptionDialog(e);
+        }
     }//GEN-LAST:event_closeButtonActionPerformed
 
     private void openButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openButtonActionPerformed
-        JFileChooser chooser = new JFileChooser(currentDirectory);
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-            ".jpg, .gif, .png", "jpg", "gif", "png");
-        chooser.setFileFilter(filter);
-        int returnVal = chooser.showOpenDialog(this);
-        if(returnVal == JFileChooser.APPROVE_OPTION) {
-            File imageFile = chooser.getSelectedFile();
-            currentDirectory = chooser.getCurrentDirectory();
-            try {
-                spriteClipper.setSpriteSheet(imageFile);
-            } catch (Exception e) {
-                exceptionDialog(e);
+        try {
+            JFileChooser chooser = new JFileChooser(currentDirectory);
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                ".jpg, .gif, .png", "jpg", "gif", "png");
+            chooser.setFileFilter(filter);
+            int returnVal = chooser.showOpenDialog(this);
+            if(returnVal == JFileChooser.APPROVE_OPTION) {
+                File imageFile = chooser.getSelectedFile();
+                currentDirectory = chooser.getCurrentDirectory();
+                try {
+                    spriteClipper.setSpriteSheet(imageFile);
+                } catch (Exception e) {
+                    exceptionDialog(e);
+                }
             }
+        } catch (Exception e) {
+            exceptionDialog(e);
         }
-
     }//GEN-LAST:event_openButtonActionPerformed
 
     private void connSelectorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connSelectorActionPerformed
-        // TODO add your handling code here:
-        spriteClipper.setFinder((SpriteClipFinder) connSelector.getSelectedItem());
+        try {
+            spriteClipper.setFinder((SpriteClipFinder) connSelector.getSelectedItem());
+        } catch (Exception e) {
+            exceptionDialog(e);
+        }
     }//GEN-LAST:event_connSelectorActionPerformed
 
     private void filterSelectorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterSelectorActionPerformed
-        // TODO add your handling code here:
-        spriteClipper.setBackgroundFilter((BackgroundFilter) filterSelector.getSelectedItem());
+        try {
+            spriteClipper.setBackgroundFilter((BackgroundFilter) filterSelector.getSelectedItem());
+        } catch (Exception e) {
+            exceptionDialog(e);
+        }
+        
     }//GEN-LAST:event_filterSelectorActionPerformed
 
     private void findSpritesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_findSpritesButtonActionPerformed
-        // TODO add your handling code here:
-        spriteClipper.findSprites();
+        try {
+           spriteClipper.findSprites(); 
+        }catch (Exception e) {
+            exceptionDialog(e);
+        }
     }//GEN-LAST:event_findSpritesButtonActionPerformed
 
     private void selectAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllButtonActionPerformed
@@ -640,86 +660,104 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
     }//GEN-LAST:event_selectAllButtonActionPerformed
 
     private void selectNoneButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectNoneButtonActionPerformed
-        setAllMarkers(false);
+        try {
+            setAllMarkers(false);
+        } catch (Exception e) {
+            exceptionDialog(e);
+        }
     }//GEN-LAST:event_selectNoneButtonActionPerformed
 
     private void mergeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mergeButtonActionPerformed
-        JViewport viewport = spriteSheetScrollPane.getViewport();
-        SpriteSheetPane ssPane = (SpriteSheetPane) viewport.getView();
-        spriteClipper.mergeSprites(ssPane.getSelectedClips());
+        try {
+            JViewport viewport = spriteSheetScrollPane.getViewport();
+            SpriteSheetPane ssPane = (SpriteSheetPane) viewport.getView();
+            spriteClipper.mergeSprites(ssPane.getSelectedClips());
+        } catch (Exception e) {
+            exceptionDialog(e);
+        }
     }//GEN-LAST:event_mergeButtonActionPerformed
 
     private void reshapeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reshapeButtonActionPerformed
-        JViewport viewport = spriteSheetScrollPane.getViewport();
-        SpriteSheetPane ssPane = (SpriteSheetPane) viewport.getView();
-        ButtonModel selectedModel = rsAnchorGroup.getSelection();
+        try {
+            JViewport viewport = spriteSheetScrollPane.getViewport();
+            SpriteSheetPane ssPane = (SpriteSheetPane) viewport.getView();
+            ButtonModel selectedModel = rsAnchorGroup.getSelection();
 
-        SpriteClip.AnchorType anchor;
-        if (selectedModel == tlRadioButton.getModel()) {
-            anchor = SpriteClip.AnchorType.TL;
-        }else if (selectedModel == tcRadioButton.getModel()) {
-            anchor = SpriteClip.AnchorType.TC;
-        }else if (selectedModel == trRadioButton.getModel()) {
-            anchor = SpriteClip.AnchorType.TR;
-        }else if (selectedModel == clRadioButton.getModel()) {
-            anchor = SpriteClip.AnchorType.CL;
-        }else if (selectedModel == crRadioButton.getModel()) {
-            anchor = SpriteClip.AnchorType.CR;
-        }else if (selectedModel == blRadioButton.getModel()) {
-            anchor = SpriteClip.AnchorType.BL;
-        }else if (selectedModel == bcRadioButton.getModel()) {
-            anchor = SpriteClip.AnchorType.BC;
-        }else {
-            anchor = SpriteClip.AnchorType.BR;
-        }
+            SpriteClip.AnchorType anchor;
+            if (selectedModel == tlRadioButton.getModel()) {
+                anchor = SpriteClip.AnchorType.TL;
+            }else if (selectedModel == tcRadioButton.getModel()) {
+                anchor = SpriteClip.AnchorType.TC;
+            }else if (selectedModel == trRadioButton.getModel()) {
+                anchor = SpriteClip.AnchorType.TR;
+            }else if (selectedModel == clRadioButton.getModel()) {
+                anchor = SpriteClip.AnchorType.CL;
+            }else if (selectedModel == crRadioButton.getModel()) {
+                anchor = SpriteClip.AnchorType.CR;
+            }else if (selectedModel == blRadioButton.getModel()) {
+                anchor = SpriteClip.AnchorType.BL;
+            }else if (selectedModel == bcRadioButton.getModel()) {
+                anchor = SpriteClip.AnchorType.BC;
+            }else {
+                anchor = SpriteClip.AnchorType.BR;
+            }
 
-        spriteClipper.reshapeSprites(ssPane.getSelectedClips(), anchor);
-        
+            spriteClipper.reshapeSprites(ssPane.getSelectedClips(), anchor);
+        } catch (Exception e) {
+            exceptionDialog(e);
+        }        
     }//GEN-LAST:event_reshapeButtonActionPerformed
 
     private void storeClipsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_storeClipsButtonActionPerformed
-        SpriteSheetPane ssPane = (SpriteSheetPane)
-                                         spriteSheetScrollPane.getViewport().getView();
-        spriteClipper.storeClips(ssPane.getSelectedClips());
+        try {
+            SpriteSheetPane ssPane = (SpriteSheetPane)
+                                             spriteSheetScrollPane.getViewport().getView();
+            spriteClipper.storeClips(ssPane.getSelectedClips());
+        } catch (Exception e) {
+            exceptionDialog(e);
+        }
     }//GEN-LAST:event_storeClipsButtonActionPerformed
 
     private void saveToButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveToButtonActionPerformed
-        JFileChooser chooser = new JFileChooser(currentDirectory);
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        int returnVal = chooser.showSaveDialog(this);
-        if(returnVal == JFileChooser.APPROVE_OPTION) {
-            File imageDirectory = chooser.getSelectedFile();
-            currentDirectory = imageDirectory;
-            try {
+        try {
+            JFileChooser chooser = new JFileChooser(currentDirectory);
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int returnVal = chooser.showSaveDialog(this);
+            if(returnVal == JFileChooser.APPROVE_OPTION) {
+                File imageDirectory = chooser.getSelectedFile();
+                currentDirectory = imageDirectory;
                 spriteClipper.saveClips(getSelectedStoredClips(), imageDirectory, "png");
-            } catch (Exception e) {
-                exceptionDialog(e);
             }
+        } catch (Exception e) {
+            exceptionDialog(e);
         }
     }//GEN-LAST:event_saveToButtonActionPerformed
 
     private void packButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_packButtonActionPerformed
-
-        JFileChooser chooser = new JFileChooser(currentDirectory);
-        chooser.setDialogTitle("Provide a name for sprite PNG pack");
-        int returnVal = chooser.showSaveDialog(this);
-        if(returnVal == JFileChooser.APPROVE_OPTION) {
-            File packFile = chooser.getSelectedFile();
-            currentDirectory = chooser.getCurrentDirectory();
-            try {
+        try {
+            JFileChooser chooser = new JFileChooser(currentDirectory);
+            chooser.setDialogTitle("Provide a name for sprite PNG pack");
+            int returnVal = chooser.showSaveDialog(this);
+            if(returnVal == JFileChooser.APPROVE_OPTION) {
+                File packFile = chooser.getSelectedFile();
+                currentDirectory = chooser.getCurrentDirectory();
                 Collection<SpriteClip> clips = getSelectedStoredClips();
                 if (clips == null) {
                     clips = spriteClipper.getStoredClips();
                 }
-                spriteClipper.pack(clips, packFile);
-            } catch (Exception e) {
-                exceptionDialog(e);
+                spriteClipper.pack(clips, packFile);  
             }
+        } catch (Exception e) {
+            exceptionDialog(e);
         }
     }//GEN-LAST:event_packButtonActionPerformed
 
     private void packerSelectorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_packerSelectorActionPerformed
-        spriteClipper.setSpritePacker((SpritePacker) packerSelector.getSelectedItem());
+       try {
+           spriteClipper.setSpritePacker((SpritePacker) packerSelector.getSelectedItem());
+       } catch (Exception e) {
+            exceptionDialog(e);
+        }
     }//GEN-LAST:event_packerSelectorActionPerformed
 
     private void setAllMarkers(boolean bool) {
