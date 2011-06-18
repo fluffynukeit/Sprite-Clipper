@@ -36,6 +36,7 @@ import java.awt.Rectangle;
 import java.awt.image.*;
 import java.io.*;
 import java.util.Collection;
+import java.util.HashSet;
 import javax.imageio.*;
 
 /**
@@ -71,13 +72,35 @@ public class SpriteSheet {
 
     public void mergeClips(Collection<SpriteClip> mergeClips) {
 
-        if (mergeClips == null || mergeClips.size() <= 1) {
-            return;     // no merging needed to be done
+        if (mergeClips == null) {
+            return;
         }
 
-        clips.removeAll(mergeClips);
-        SpriteClip newMergedClip = SpriteClip.makeMergedClip(mergeClips);
-        clips.add(newMergedClip);
+        if (mergeClips.size() == 1) {
+            /**
+             * If only 1 clip is selected, then find overlapping clips and merge them.
+             */
+            SpriteClip selectedClip = mergeClips.iterator().next();
+
+            Collection<SpriteClip> overlappingSprites = new HashSet();
+            overlappingSprites.add(selectedClip);
+            for (SpriteClip currentClip : clips) {
+                if (selectedClip != currentClip &&
+                    currentClip.getBoundingBox().intersects(selectedClip.getBoundingBox())) {
+                    overlappingSprites.add(currentClip);
+                }
+            }
+            /* Once done, only merge if 2 sprites overlap */
+            if (overlappingSprites.size() >= 2) {
+                clips.removeAll(overlappingSprites);
+                SpriteClip newMergedClip = SpriteClip.makeMergedClip(overlappingSprites);
+                clips.add(newMergedClip);
+            }
+        } else {    // merge the selected clips
+            clips.removeAll(mergeClips);
+            SpriteClip newMergedClip = SpriteClip.makeMergedClip(mergeClips);
+            clips.add(newMergedClip);
+        }
     }
 
     public void expandBoxesOf(  Collection<SpriteClip> expandClips,
