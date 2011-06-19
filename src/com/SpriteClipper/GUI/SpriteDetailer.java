@@ -130,11 +130,10 @@ public class SpriteDetailer extends javax.swing.JPanel implements ListSelectionL
         int numIndices = selectedIndices.length;
 
         if (numIndices == 0 || numIndices > 1) {
-            labelImage.setIcon(null);
+            setClip(null);
             String selText = (numIndices != 0) ? numIndices + " clips selected.":
                                                 "All clips will be used.";
             labelText.setText(selText);
-            textField.setText(null);
         } else {
             setClip(((SpriteClip) list.getSelectedValue()));
         }
@@ -159,15 +158,24 @@ public class SpriteDetailer extends javax.swing.JPanel implements ListSelectionL
     private void setClip(SpriteClip _clip) {
         clip = _clip;
        
-        Dimension dim = new Dimension(labelImage.getWidth(), labelImage.getHeight());
-        Image scaledImage = clip.makeCutout(null, dim);
+        if (clip != null) {
+            textField.setEnabled(true);
+            Dimension dim = new Dimension(labelImage.getWidth(), labelImage.getHeight());
+            Image scaledImage = clip.makeCutout(null, dim);
 
-        Icon icon = new ImageIcon(scaledImage);
-        labelImage.setIcon(icon);
-        updateLabelText();
+            Icon icon = new ImageIcon(scaledImage);
+            labelImage.setIcon(icon);
+            updateLabelText();
 
-        /* Now set the text field */
-        textField.setText(clip.getName());
+            /* Now set the text field */
+            textField.setText(clip.getName());
+        } else {
+            /* Clear out the sprite detailer */
+            labelImage.setIcon(null);
+            labelText.setText(null);
+            textField.setText(null);
+            textField.setEnabled(false);
+        }
     }
 
     private SpriteClip clip = null;
