@@ -43,7 +43,6 @@ import java.io.PrintWriter;
 import java.util.*;
 import javax.imageio.ImageIO;
 
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * Parent class for defining ways to pack sprites in a new sprite sheet.  Provides methods
@@ -106,19 +105,23 @@ public abstract class SpritePacker {
         
         BufferedImage image = drawPack();
         
-        String baseName = FilenameUtils.removeExtension(imageFile.getPath());
-        String imageFileName = baseName + ".png";
+        String baseName = imageFile.getPath();
+        String imageFileName;
+        if (baseName.endsWith(".png")) {
+            imageFileName = baseName;
+        } else {
+            imageFileName = baseName + ".png";
+        }
         File cleanFile = new File(imageFileName);
         ImageIO.write(image, "png", cleanFile);
-        describePack(imageFileName);
+        describePack(baseName, cleanFile);
     }
 
-    private void describePack(String imageFileName) throws IOException {
-        String baseName = FilenameUtils.removeExtension(imageFileName);
+    private void describePack(String baseName, File imageFile) throws IOException {
         FileWriter fstream = new FileWriter(baseName + ".def");
         PrintWriter out = new PrintWriter(fstream);
         
-        out.println(FilenameUtils.getName(imageFileName));
+        out.println(imageFile.getName());
         
         Set<SpriteClip> clips = clipToPosition.keySet();
         
