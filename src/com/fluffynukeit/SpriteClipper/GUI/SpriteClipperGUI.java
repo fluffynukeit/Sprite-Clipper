@@ -139,7 +139,9 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
                     clippedList.ensureIndexIsVisible(listModel.getSize()-1);
                     SpriteSheetPane ssPaneAdded = (SpriteSheetPane)
                                              spriteSheetScrollPane.getViewport().getView();
-                    ssPaneAdded.setAllSelected(false);
+                    if (ssPaneAdded != null) {
+                        ssPaneAdded.setAllSelected(false);
+                    }
                     break;
 
                 default:
@@ -836,6 +838,7 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
                                         e.toString(),
                                         "Oops!",
                                         JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
     }
 
     /**
