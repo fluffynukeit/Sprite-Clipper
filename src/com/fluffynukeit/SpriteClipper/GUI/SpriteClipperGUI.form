@@ -516,6 +516,7 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Remove"/>
             <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;div align=&quot;center&quot;&gt;Removes the selected clipped sprites. (Delete)&lt;/div&gt;&lt;/html&gt;"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="focusable" type="boolean" value="false"/>
           </Properties>
           <Events>
@@ -526,6 +527,7 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Save To..."/>
             <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;div align=&quot;center&quot;&gt;Saves all selected clipped sprites to a directory. (Ctrl+S)&lt;/div&gt;&lt;/html&gt;"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="focusable" type="boolean" value="false"/>
           </Properties>
           <Events>
@@ -541,6 +543,7 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Pack..."/>
             <Property name="toolTipText" type="java.lang.String" value="&lt;html&gt;&lt;div align=&quot;center&quot;&gt;Packs the selected sprite clips into a new, dense sheet using the&lt;br&gt;selected packing method, and writes definition text file. (Ctrl+P)&lt;/div&gt;&lt;/html&gt;"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="focusable" type="boolean" value="false"/>
           </Properties>
           <Events>

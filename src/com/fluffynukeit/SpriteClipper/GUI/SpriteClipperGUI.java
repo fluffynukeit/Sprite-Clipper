@@ -60,6 +60,7 @@ import javax.swing.JViewport;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -136,7 +137,23 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
                     for (SpriteClip currentClip : storedClips) {
                         listModel.addElement(currentClip);
                     }
-                    clippedList.ensureIndexIsVisible(listModel.getSize()-1);
+
+                    if (!listModel.isEmpty()) {
+                        clippedList.ensureIndexIsVisible(listModel.getSize()-1);
+                        setSaveControlsEnabled(true);
+                    } else {
+                        setSaveControlsEnabled(false);
+                    }
+                    
+                    /**
+                     * If new clips are added, update the sprite detailer, not just when
+                     * the selection changes.
+                     */ 
+                    spriteDetailer.valueChanged(new ListSelectionEvent(clippedList,
+                                                                    0,
+                                                                    listModel.getSize()-1,
+                                                                    false));
+
                     SpriteSheetPane ssPaneAdded = (SpriteSheetPane)
                                              spriteSheetScrollPane.getViewport().getView();
                     if (ssPaneAdded != null) {
@@ -231,7 +248,7 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
             }
         });
 
-        findSpritesButton.setFont(new java.awt.Font("DejaVu Sans", 0, 14)); // NOI18N
+        findSpritesButton.setFont(new java.awt.Font("DejaVu Sans", 0, 14));
         findSpritesButton.setText("<html><div align=\"center\">Find<br>Sprites!</div></html>");
         findSpritesButton.setToolTipText("<html><div align=\"center\">Identifies sprites in the sprite sheet using selected <br> background filter and connectedness criterion. (Ctrl+F)</div></html>");
         findSpritesButton.setEnabled(false);
@@ -296,7 +313,7 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
             }
         });
 
-        storeClipsButton.setFont(new java.awt.Font("DejaVu Sans", 0, 14)); // NOI18N
+        storeClipsButton.setFont(new java.awt.Font("DejaVu Sans", 0, 14));
         storeClipsButton.setText("Clip!");
         storeClipsButton.setToolTipText("<html><div align=\"center\">Adds selected sprites to the clipped sprites. (Ctrl+C)</div></html>");
         storeClipsButton.setEnabled(false);
@@ -502,6 +519,7 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
 
         removeButton.setText("Remove");
         removeButton.setToolTipText("<html><div align=\"center\">Removes the selected clipped sprites. (Delete)</div></html>");
+        removeButton.setEnabled(false);
         removeButton.setFocusable(false);
         removeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -511,6 +529,7 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
 
         saveToButton.setText("Save To...");
         saveToButton.setToolTipText("<html><div align=\"center\">Saves all selected clipped sprites to a directory. (Ctrl+S)</div></html>");
+        saveToButton.setEnabled(false);
         saveToButton.setFocusable(false);
         saveToButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -522,6 +541,7 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
 
         packButton.setText("Pack...");
         packButton.setToolTipText("<html><div align=\"center\">Packs the selected sprite clips into a new, dense sheet using the<br>selected packing method, and writes definition text file. (Ctrl+P)</div></html>");
+        packButton.setEnabled(false);
         packButton.setFocusable(false);
         packButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -784,6 +804,12 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
         tlRadioButton.setEnabled(bool);
     }
 
+    private void setSaveControlsEnabled(boolean bool) {
+        saveToButton.setEnabled(bool);
+        removeButton.setEnabled(bool);
+        packButton.setEnabled(bool);
+    }
+
     private Collection<SpriteClip> getSelectedStoredClips() {
         Object[] selClipsArray = clippedList.getSelectedValues();
         Collection<SpriteClip> selClips = null;
@@ -834,11 +860,11 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
     }
 
     private void exceptionDialog(Exception e){
+        e.printStackTrace();
         JOptionPane.showMessageDialog(  this,
                                         e.toString(),
                                         "Oops!",
                                         JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
     }
 
     /**

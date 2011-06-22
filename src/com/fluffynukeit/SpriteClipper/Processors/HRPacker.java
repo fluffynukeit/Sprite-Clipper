@@ -62,20 +62,23 @@ public class HRPacker extends SpritePacker {
     }
 
     public void pack(Collection<SpriteClip> _clips){
-
-        List<SpriteClip> clipList = new ArrayList();
-        for (SpriteClip curClip : _clips) {
-            clipList.add(curClip);
-        }   //create array list manually to support the remove operation
-        clips = clipList;
-        HeuristicRecursion();
+        
+        /* Only try to pack if we have stuff to pack. */
+        if (_clips != null) {
+            List<SpriteClip> clipList = new ArrayList();
+            for (SpriteClip curClip : _clips) {
+                clipList.add(curClip);
+            }   //create array list manually to support the remove operation
+            clips = clipList;
+            HeuristicRecursion();
+        }
     }
 
     private void initialize() {
         
         clearPacker();
         Collections.sort(clips, SpriteClip.DEC_HEIGHT);
-        String out = (clips == null) ? "Null" : "Not null";
+       
         //System.out.println("Initialize clips is " + out);
         
         /* Set the initial width of the image pack.  Assume all clip area fits in a square

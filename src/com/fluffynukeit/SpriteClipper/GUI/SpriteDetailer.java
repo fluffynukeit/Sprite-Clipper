@@ -61,6 +61,7 @@ public class SpriteDetailer extends javax.swing.JPanel implements ListSelectionL
     public SpriteDetailer() {
         initComponents();
         //System.out.println("init");
+        labelText.setText("No stored clips available.");
         RenameFilter fnf = new RenameFilter();
         ((PlainDocument)textField.getDocument()).setDocumentFilter(fnf);
     }
@@ -125,14 +126,16 @@ public class SpriteDetailer extends javax.swing.JPanel implements ListSelectionL
 }//GEN-LAST:event_textFieldActionPerformed
     public void valueChanged(ListSelectionEvent e) {
         JList list = (JList)e.getSource();
+        int listSize = list.getModel().getSize();
 
         int selectedIndices[] = list.getSelectedIndices();
         int numIndices = selectedIndices.length;
 
         if (numIndices == 0 || numIndices > 1) {
             setClip(null);
-            String selText = (numIndices != 0) ? numIndices + " clips selected.":
-                                                "All clips will be used.";
+            String selText =    (numIndices != 0) ? numIndices + " clips selected.":
+                                (listSize != 0) ?   "All " + listSize + " clips will be used.":
+                                                    "No stored clips available.";
             labelText.setText(selText);
         } else {
             setClip(((SpriteClip) list.getSelectedValue()));
