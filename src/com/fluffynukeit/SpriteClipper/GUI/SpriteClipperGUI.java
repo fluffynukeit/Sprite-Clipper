@@ -130,36 +130,63 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
                     setSpriteControlsEnabled(true);
                     break;
                 case STORED_ADDED:
-                case STORED_REMOVED:
+                {
                     DefaultListModel listModel = (DefaultListModel) clippedList.getModel();
-                    listModel.clear();
+                    int[] selInds = clippedList.getSelectedIndices();
                     List<SpriteClip> storedClips = spriteClipper.getStoredClips();
-                    for (SpriteClip currentClip : storedClips) {
+
+                    /*
+                     * Clearing, re-adding all, then re-selecting is faster than checking
+                     * if each stored clip is already in the list model.  If the event
+                     * contained only the new clips, we could just add the new ones, but
+                     * doesn't that break MVC paradigm? Ideology fail.
+                     */
+                    listModel.clear();
+                    for (SpriteClip currentClip : storedClips) { 
                         listModel.addElement(currentClip);
                     }
+                    clippedList.setSelectedIndices(selInds);
+                    /* STORED_ADDED only triggered if new clips are actually added. */
+                    clippedList.ensureIndexIsVisible(listModel.getSize()-1);
+                    setSaveControlsEnabled(true);
 
-                    if (!listModel.isEmpty()) {
-                        clippedList.ensureIndexIsVisible(listModel.getSize()-1);
-                        setSaveControlsEnabled(true);
-                    } else {
-                        setSaveControlsEnabled(false);
-                    }
-                    
-                    /**
-                     * If new clips are added, update the sprite detailer, not just when
-                     * the selection changes.
-                     */ 
-                    spriteDetailer.valueChanged(new ListSelectionEvent(clippedList,
-                                                                    0,
-                                                                    listModel.getSize()-1,
-                                                                    false));
-
+                    /* Deselect everything as feedback for add operation */
                     SpriteSheetPane ssPaneAdded = (SpriteSheetPane)
                                              spriteSheetScrollPane.getViewport().getView();
                     if (ssPaneAdded != null) {
                         ssPaneAdded.setAllSelected(false);
                     }
+                    spriteDetailer.valueChanged(new ListSelectionEvent(clippedList,
+                                                                    0,
+                                                                    listModel.getSize()-1,
+                                                                    false));
                     break;
+                }
+                case STORED_REMOVED:
+                {
+                    DefaultListModel listModel = (DefaultListModel) clippedList.getModel();
+
+                    List<SpriteClip> storedClips = spriteClipper.getStoredClips();
+
+                    /*
+                     * Clearing and re-adding is faster than querying to see which clips
+                     * should be removed from the list model.
+                     */
+                    listModel.clear();
+                    for (SpriteClip currentClip : storedClips) {
+                        listModel.addElement(currentClip);
+                    }
+
+                    /* Only allow saving if clips are available. */
+                    if (listModel.isEmpty()) {
+                        setSaveControlsEnabled(false);
+                    }
+                    spriteDetailer.valueChanged(new ListSelectionEvent(clippedList,
+                                                                    0,
+                                                                    listModel.getSize()-1,
+                                                                    false));
+                    break;
+                }
 
                 default:
             }

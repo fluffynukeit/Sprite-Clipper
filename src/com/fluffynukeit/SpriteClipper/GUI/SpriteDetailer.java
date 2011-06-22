@@ -134,7 +134,7 @@ public class SpriteDetailer extends javax.swing.JPanel implements ListSelectionL
         if (numIndices == 0 || numIndices > 1) {
             setClip(null);
             String selText =    (numIndices != 0) ? numIndices + " clips selected.":
-                                (listSize != 0) ?   "All " + listSize + " clips will be used.":
+                                (listSize != 0) ?   "All " + listSize + " clips will be saved.":
                                                     "No stored clips available.";
             labelText.setText(selText);
         } else {

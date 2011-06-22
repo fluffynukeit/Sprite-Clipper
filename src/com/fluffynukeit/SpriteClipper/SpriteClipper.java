@@ -156,14 +156,19 @@ public class SpriteClipper extends Observable {
     }
 
     public void storeClips(Collection<SpriteClip> _clips) {
-
-        for (SpriteClip currentClip : _clips) {
-            if (!storedClips.contains(currentClip)) {
-                storedClips.add(currentClip);
+        
+        if (_clips != null && !_clips.isEmpty()) {
+            boolean actuallyAdded = false;
+            for (SpriteClip currentClip : _clips) {
+                if (!storedClips.contains(currentClip)) {
+                    storedClips.add(currentClip);
+                    actuallyAdded = true;
+                }
+            }
+            if (actuallyAdded) {
+                broadcastChange(SpriteClipperEvent.STORED_ADDED);
             }
         }
-        
-        broadcastChange(SpriteClipperEvent.STORED_ADDED);
     }
 
     public void saveClips ( Collection<SpriteClip> clips, 
