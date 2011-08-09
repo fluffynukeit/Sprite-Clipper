@@ -9,8 +9,10 @@ import com.fluffynukeit.SpriteClipper.*;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -71,7 +73,13 @@ public class SpriteSheetPane extends JLayeredPane {
     }
 
     public void setAllSelected(boolean bool) {
-        Component[] components = getComponentsInLayer(CLIP_LAYER);
+        
+
+        /*
+         * We want to select the clips in left-right, top-down order, but we don't want to
+         * be too strict about it.
+         */
+        Component[] components = looselySortComponents();
 
         for (Component currentComponent : components) {
             SpriteMarker currentMarker = (SpriteMarker) currentComponent;
@@ -100,6 +108,51 @@ public class SpriteSheetPane extends JLayeredPane {
             returnList.add(selectedMarker.getClip());
         }
         return returnList;
+    }
+
+    private Component[] looselySortComponents() {
+        Component[] components = getComponentsInLayer(CLIP_LAYER);
+
+        // Set up some sorters
+        Comparator<Component> byY = new Comparator<Component>() {
+            public int compare(Component a, Component b) {
+                return  ((SpriteMarker)a).getClip().getBoundingBox().y -
+                        ((SpriteMarker)b).getClip().getBoundingBox().y;
+            }
+        };
+
+        Comparator<Component> byX = new Comparator<Component>() {
+            public int compare(Component a, Component b) {
+                return  ((SpriteMarker)a).getClip().getBoundingBox().x -
+                        ((SpriteMarker)b).getClip().getBoundingBox().x;
+            }
+        };
+
+        // First sort according to y coordinate, smallest to biggest
+        Arrays.sort(components, byY);
+        int rowStart = 0;
+
+        while (rowStart < components.length) {
+            // Choose a "model" sprite clip
+            SpriteMarker model = (SpriteMarker)components[rowStart];
+            int modelBottom  =  model.getClip().getBoundingBox().y +
+                                model.getClip().getBoundingBox().height;
+            int indexNoOverlap = rowStart + 1;
+
+            // Search for the first clip that does not overlap with the model
+            for (   ;
+                    indexNoOverlap < components.length &&
+                    ((SpriteMarker)components[indexNoOverlap]).getClip().getBoundingBox().y < modelBottom;
+                    indexNoOverlap++
+                );
+            // Sort the approved clips by x order
+            Arrays.sort(components, rowStart, indexNoOverlap, byX);
+
+            //Start the search again with the next lowest clip
+            rowStart = indexNoOverlap;
+        }
+        return components;
+
     }
 
 }
