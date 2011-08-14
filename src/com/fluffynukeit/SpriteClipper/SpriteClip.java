@@ -79,12 +79,11 @@ public final class SpriteClip {
         GraphicsDevice gs = ge.getDefaultScreenDevice();
         GraphicsConfiguration gc = gs.getDefaultConfiguration();
 
-        Rectangle box = getBoundingBox();
-        int w = box.width;
-        int h = box.height;
+        int w = getWidth();
+        int h = getHeight();
 
         BufferedImage clipImage =
-                gc.createCompatibleImage(w+1, h+1, Transparency.TRANSLUCENT);
+                gc.createCompatibleImage(w, h, Transparency.TRANSLUCENT);
         BufferedImage parent = getParentImage();
 
         for (Point curPoint: getPoints()) {
@@ -195,21 +194,21 @@ public final class SpriteClip {
             case BL:
             case BC:
             case BR:
-                anchorY = boundingBox.y + boundingBox.height;
+                anchorY = maxY();
                 shiftDown = 0;
-                shiftUp = newHeight;
+                shiftUp = newHeight - 1;
                 break;
             case CL:
             case CR:
-                anchorY = boundingBox.y + (int) (boundingBox.height/2.0);
-                shiftDown = (int) (newHeight/2.0);
-                shiftUp = newHeight - shiftDown;
+                anchorY = centerY();
+                shiftUp = (int) (newHeight/2.0);
+                shiftDown = newHeight - shiftUp - 1;
                 break;
             case TL:
             case TC:
             case TR:
-                anchorY = boundingBox.y;
-                shiftDown = newHeight;
+                anchorY = minY();
+                shiftDown = newHeight - 1;
                 shiftUp = 0;
                 break;
         }
@@ -217,31 +216,31 @@ public final class SpriteClip {
             case TL:
             case BL:
             case CL:
-                anchorX = boundingBox.x;
+                anchorX = getX();
                 shiftLeft = 0;
-                shiftRight = newWidth;
+                shiftRight = newWidth - 1;
                 break;
             case TC:
             case BC:
-                anchorX = boundingBox.x + (int) (boundingBox.width/2.0);
+                anchorX = centerX();
                 shiftLeft = (int) (newWidth/2.0);
-                shiftRight = newWidth - shiftLeft;
+                shiftRight = newWidth - shiftLeft - 1;
                 break;
             case TR:
             case CR:
             case BR:
-                anchorX = boundingBox.x + boundingBox.width;
-                shiftLeft = newWidth;
+                anchorX = maxX();
+                shiftLeft = newWidth - 1;
                 shiftRight = 0;
                 break;
         }
 
 
-        Rectangle bounder = new Rectangle(anchorX, anchorY, 1, 1);
+        Rectangle bounder = new Rectangle(anchorX, anchorY, 0, 0);
 
         int newUp = Math.max(anchorY - shiftUp , 0);
-        int newRight = Math.min(anchorX + shiftRight, pw-1);
-        int newDown = Math.min(anchorY + shiftDown, ph-1);
+        int newRight = Math.min(anchorX + shiftRight, pw);
+        int newDown = Math.min(anchorY + shiftDown, ph);
         int newLeft = Math.max(anchorX - shiftLeft, 0);
 
         bounder.add(newRight, newUp);
@@ -252,16 +251,31 @@ public final class SpriteClip {
     }
 
     public int getRelX(Point p){
-        int relX = p.x-boundingBox.x;
+        int relX = p.x-getX();
         return relX;
     }
 
     public int getRelY(Point p){
-        int relY = p.y-boundingBox.y;
+        int relY = p.y-getY();
         return relY;
     }
     public Rectangle getBoundingBox() {
         return boundingBox;
+    }
+    public int getWidth() {
+        /*
+         * The width of the bounding box is not the same as the number of pixels!
+         */
+        return boundingBox.width + 1;
+    }
+    public int getHeight() {
+        return boundingBox.height + 1;
+    }
+    public int getX() {
+        return boundingBox.x;
+    }
+    public int getY() {
+        return boundingBox.y;
     }
     public Set<Point> getPoints() {
         return points;
@@ -277,26 +291,86 @@ public final class SpriteClip {
     public void setName(String newName) {
         name = newName;
     }
+    public String toString() {
+        StringBuilder s = new StringBuilder(
+                "Data dump for clip " + getName() + "\n" +
+                "Bounding box x: " + boundingBox.x +
+                            ", y: " + boundingBox.y +
+                            ", w: " + boundingBox.width +
+                            ", h: " + boundingBox.height + "\n" +
+                "Points:\n");
+        for (Point curPoint : points) {
+            s.append("\t x: " + curPoint.x + ", y: " + curPoint.y + "\n");
+        }
+        s.append("Clip W: " + getWidth() + ", H: " + getHeight());
+
+        return s.toString();
+        
+    }
+    public int minY() {
+        return getY();
+    }
+    public int centerY() {
+        return getY() + (int)(getHeight()/2.0);
+    }
+    public int maxY() {
+        return getY() + getHeight() - 1;
+    }
+    public int minX() {
+        return getX();
+    }
+    public int centerX() {
+        return getX() + (int)(getWidth()/2.0);
+    }
+    public int maxX() {
+        return getX() + getWidth() - 1;
+    }
+    public Point topLeft() {
+        return new Point(minX(), minY());
+    }
+    public Point topCenter() {
+        return new Point(centerX(), minY());
+    }
+    public Point topRight() {
+        return new Point(maxX(), minY());
+    }
+    public Point centerLeft() {
+        return new Point(minX(), centerY());
+    }
+    public Point centerCenter() {
+        return new Point(centerX(), centerY());
+    }
+    public Point centerRight() {
+        return new Point(maxX(), centerY());
+    }
+    public Point bottomLeft() {
+        return new Point(minX(), maxY());
+    }
+    public Point bottomCenter() {
+        return new Point(centerX(), maxY());
+    }
+    public Point bottomRight() {
+        return new Point(maxX(), maxY());
+    }
 
     /* Sorts by decreasing area */
     public static Comparator<SpriteClip> DEC_AREA = new Comparator<SpriteClip>() {
             public int compare(SpriteClip t, SpriteClip other){
 
-            return  -((t.getBoundingBox().width*t.getBoundingBox().height) -
-                    (other.getBoundingBox().width*other.getBoundingBox().height));
+            return  -((t.getWidth()*t.getHeight()) - (other.getWidth()*other.getHeight()));
             }
         };
     /* Sorts by decreasing height */
     public static Comparator<SpriteClip> DEC_HEIGHT = new Comparator<SpriteClip>() {
         public int compare(SpriteClip t, SpriteClip other){
 
-        return  -(t.getBoundingBox().height - other.getBoundingBox().height);
+        return  -(t.getHeight() - other.getHeight());
         }
     };
     /* Sorts by decreasing width */
     public static Comparator<SpriteClip> DEC_WIDTH = new Comparator<SpriteClip>() {
             public int compare(SpriteClip a, SpriteClip b) {
-                return -(a.getBoundingBox().width - b.getBoundingBox().width);
+                return -(a.getWidth() - b.getWidth());
             }
         };
 }

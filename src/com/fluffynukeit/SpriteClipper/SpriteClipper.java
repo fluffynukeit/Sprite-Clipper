@@ -32,9 +32,7 @@
 
 package com.fluffynukeit.SpriteClipper;
 
-import com.fluffynukeit.SpriteClipper.Processors.Connectivity8;
-import com.fluffynukeit.SpriteClipper.Processors.CornerFilter;
-import com.fluffynukeit.SpriteClipper.Processors.HRPacker;
+import com.fluffynukeit.SpriteClipper.Processors.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,7 +70,8 @@ public class SpriteClipper extends Observable {
                                         new Connectivity8(3),
                                         new Connectivity8(5)};
         BackgroundFilter[] filters = {new CornerFilter()};
-        SpritePacker[] packers = {new HRPacker(3)};
+        SpritePacker[] packers = {  new GridPacker(),
+                                    new HRPacker(3)};
 
         availableFinders = finders;
         availableFilters = filters;
@@ -152,7 +151,8 @@ public class SpriteClipper extends Observable {
     public void reshapeSprites( Collection<SpriteClip> clips,
                                 SpriteClip.AnchorType rsAnchorType) {
         currentSheet.expandBoxesOf(clips, rsAnchorType);
-        broadcastChange(SpriteClipperEvent.CLIPS_FOUND);
+        broadcastChange(SpriteClipperEvent.CLIPS_FOUND);  //update sprite sheet pane
+        broadcastChange(SpriteClipperEvent.STORED_ADDED);//update clipped list
     }
 
     public void storeClips(Collection<SpriteClip> _clips) {
@@ -160,6 +160,7 @@ public class SpriteClipper extends Observable {
         if (_clips != null && !_clips.isEmpty()) {
             boolean actuallyAdded = false;
             for (SpriteClip currentClip : _clips) {
+                //System.out.println(currentClip);
                 if (!storedClips.contains(currentClip)) {
                     storedClips.add(currentClip);
                     actuallyAdded = true;
@@ -195,7 +196,7 @@ public class SpriteClipper extends Observable {
         }
     }
 
-    public void pack(Collection<SpriteClip> packClips, File destination) throws IOException{
+    public void pack(List<SpriteClip> packClips, File destination) throws IOException{
         currentPacker.pack(packClips);
         currentPacker.writePack(destination);
     }

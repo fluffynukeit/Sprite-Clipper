@@ -87,6 +87,8 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
         rsAnchorGroup.add(brRadioButton);
         rsAnchorGroup.setSelected(blRadioButton.getModel(), true);
 
+        connSelector.setSelectedIndex(1);
+
         spriteClipper.addObserver(this);
         clippedList.addListSelectionListener(spriteDetailer);
         addKeyListener(this);
@@ -790,7 +792,7 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
             if(returnVal == JFileChooser.APPROVE_OPTION) {
                 File packFile = chooser.getSelectedFile();
                 currentDirectory = chooser.getCurrentDirectory();
-                Collection<SpriteClip> clips = getSelectedStoredClips();
+                List<SpriteClip> clips = getSelectedStoredClips();
                 if (clips == null) {
                     clips = spriteClipper.getStoredClips();
                 }
@@ -837,9 +839,9 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
         packButton.setEnabled(bool);
     }
 
-    private Collection<SpriteClip> getSelectedStoredClips() {
+    private List<SpriteClip> getSelectedStoredClips() {
         Object[] selClipsArray = clippedList.getSelectedValues();
-        Collection<SpriteClip> selClips = null;
+        List<SpriteClip> selClips = null;
             if (selClipsArray.length > 0) {
                 selClips =  new ArrayList<SpriteClip>(selClipsArray.length);
                 for (Object curClip : selClipsArray)

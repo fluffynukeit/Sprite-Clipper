@@ -73,8 +73,8 @@ public class SpriteMarker extends JLabel implements MouseListener,
         ImageIcon icon = new ImageIcon(clipImage);
         setIcon(icon);
 
-        Rectangle box = clip.getBoundingBox();
-        setBounds(box.x, box.y, box.width+1, box.height+1);
+        // The markers look better if we draw the border with a little extra width.
+        setBounds(clip.getX()-1, clip.getY(), clip.getWidth()+1, clip.getHeight());
         setBorder(new LineBorder(color));
         setVisible(true);
     }

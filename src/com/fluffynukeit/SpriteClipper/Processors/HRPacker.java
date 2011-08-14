@@ -61,15 +61,20 @@ public class HRPacker extends SpritePacker {
         buffer = _buffer;
     }
 
-    public void pack(Collection<SpriteClip> _clips){
+    public void pack(List<SpriteClip> _clips){
         
         /* Only try to pack if we have stuff to pack. */
         if (_clips != null) {
-            List<SpriteClip> clipList = new ArrayList();
+            /*
+             * We need to build an identical clip list to use, so that
+             * if we can remove from the cloned list and not affect the
+             * stored list.
+             */
+            List<SpriteClip> builtList = new ArrayList();
             for (SpriteClip curClip : _clips) {
-                clipList.add(curClip);
-            }   //create array list manually to support the remove operation
-            clips = clipList;
+                builtList.add(curClip);
+            }
+            clips = builtList;
             HeuristicRecursion();
         }
     }
@@ -86,12 +91,11 @@ public class HRPacker extends SpritePacker {
          */
         int totalClipArea = 0;
         for (SpriteClip curClip : clips) {
-            Rectangle box = curClip.getBoundingBox();
-            totalClipArea += (box.width * box.height);
+            totalClipArea += (curClip.getWidth() * curClip.getHeight());
         }
 
         SpriteClip widestClip = Collections.min(clips, SpriteClip.DEC_WIDTH);
-        int widestWidth = widestClip.getBoundingBox().width;
+        int widestWidth = widestClip.getWidth();
 
         int initialWidth = (int) Math.max(Math.sqrt(totalClipArea), widestWidth);
         setDesktopWidth(initialWidth);
@@ -105,8 +109,8 @@ public class HRPacker extends SpritePacker {
         /* Find the first clip that can fit in s2 */
         SpriteClip addedClip = null;
         for (SpriteClip curClip : clips) {
-            if (curClip.getBoundingBox().width <= S2.width &&
-                curClip.getBoundingBox().height <= S2.height) {
+            if (curClip.getWidth() <= (S2.width+1) &&
+                curClip.getHeight() <= (S2.height+1)) {
                 addedClip = curClip;
                 break;
             }
@@ -136,6 +140,8 @@ public class HRPacker extends SpritePacker {
 
         int w = addedClip.getBoundingBox().width;
         int h = addedClip.getBoundingBox().height;
+
+        // I think this stays the same...no adding of +1 here
 
         Point bottomRightCorner = new Point(setPoint.x + w,
                                             setPoint.y + h);

@@ -147,11 +147,11 @@ public class SpriteDetailer extends javax.swing.JPanel implements ListSelectionL
         Icon icon = labelImage.getIcon();
         int lw = icon.getIconWidth();
         int lh = icon.getIconHeight();
-        Rectangle box = clip.getBoundingBox();
-        int percentSize = (lw*lh*100)/((box.width)*(box.height));
+
+        int percentSize = (lw*lh*100)/((clip.getWidth())*(clip.getHeight()));
         labelText.setText(  "<html><div align=\"center\">" +
                             clip.getName() + "<br>" + percentSize + "% scale, " +
-                            "full size " + box.width + "x" + box.height +
+                            "full size " + clip.getWidth() + "x" + clip.getHeight() +
                             "</div></html>");
         //reset focus?
         textField.setFocusable(false);

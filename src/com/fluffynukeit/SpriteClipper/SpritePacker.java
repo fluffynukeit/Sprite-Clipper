@@ -75,8 +75,8 @@ public abstract class SpritePacker {
         clipToPosition.put(clip, p);
         Rectangle newBox = new Rectangle(p.x,
                                         p.y,
-                                        clip.getBoundingBox().width,
-                                        clip.getBoundingBox().height);
+                                        clip.getWidth(),
+                                        clip.getHeight());
         desktop.add(newBox);
     }
 
@@ -84,7 +84,7 @@ public abstract class SpritePacker {
         return clipToPosition.size();
     }
 
-    public BufferedImage drawPack() {
+    private BufferedImage drawPack() {
         BufferedImage image = new BufferedImage(getDesktopWidth(),
                                                 getDesktopHeight(),
                                                 BufferedImage.TYPE_INT_ARGB);
@@ -105,19 +105,22 @@ public abstract class SpritePacker {
         
         BufferedImage image = drawPack();
         
-        String baseName = imageFile.getPath();
-        String imageFileName;
-        if (baseName.endsWith(".png")) {
-            imageFileName = baseName;
+        String inputName = imageFile.getPath();
+        String imageFileName, baseName;
+        String extension = ".png";
+        if (inputName.endsWith(extension)) {
+            baseName = inputName.substring(0, inputName.lastIndexOf(extension)).trim();
+            imageFileName = baseName + extension;
         } else {
-            imageFileName = baseName + ".png";
+            imageFileName = inputName + extension;
+            baseName = inputName;
         }
         File cleanFile = new File(imageFileName);
         ImageIO.write(image, "png", cleanFile);
         describePack(baseName, cleanFile);
     }
 
-    private void describePack(String baseName, File imageFile) throws IOException {
+    protected void describePack(String baseName, File imageFile) throws IOException {
         FileWriter fstream = new FileWriter(baseName + ".def");
         PrintWriter out = new PrintWriter(fstream);
         
@@ -131,8 +134,8 @@ public abstract class SpritePacker {
             Point p = clipToPosition.get(c);
             out.println("\t" + p.x);
             out.println("\t" + p.y);
-            out.println("\t" + c.getBoundingBox().width);
-            out.println("\t" + c.getBoundingBox().height);
+            out.println("\t" + c.getWidth());
+            out.println("\t" + c.getHeight());
             out.println("\t1");
             out.println("\t1");
             out.println("\t0");
@@ -143,6 +146,6 @@ public abstract class SpritePacker {
         out.close();
     }
 
-    public abstract void pack(Collection<SpriteClip> clips);
+    public abstract void pack(List<SpriteClip> clips);
     public abstract String toString();
 }

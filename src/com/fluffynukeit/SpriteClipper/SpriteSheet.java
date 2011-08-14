@@ -114,19 +114,18 @@ public class SpriteSheet {
         SpriteClip maxHeightClip = null;
         SpriteClip maxWidthClip = null;
         for (SpriteClip currentClip : expandClips) {
-            Rectangle currentBox = currentClip.getBoundingBox();
             if (maxHeightClip == null ||
-                currentBox.height > maxHeightClip.getBoundingBox().height){
+                currentClip.getHeight() > maxHeightClip.getHeight()){
                     maxHeightClip = currentClip;
             }
             if (maxWidthClip == null ||
-                currentBox.width > maxWidthClip.getBoundingBox().width){
+                currentClip.getWidth() > maxWidthClip.getWidth()){
                     maxWidthClip = currentClip;
             }
         }
 
-        int newWidth = maxWidthClip.getBoundingBox().width;
-        int newHeight = maxHeightClip.getBoundingBox().height;
+        int newWidth = maxWidthClip.getWidth();
+        int newHeight = maxHeightClip.getHeight();
 
         /* Now expand the heights and widths so that they're all equal */
         for (SpriteClip currentClip : expandClips){

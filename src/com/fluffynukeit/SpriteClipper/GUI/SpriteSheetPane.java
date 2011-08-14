@@ -135,8 +135,8 @@ public class SpriteSheetPane extends JLayeredPane {
         while (rowStart < components.length) {
             // Choose a "model" sprite clip
             SpriteMarker model = (SpriteMarker)components[rowStart];
-            int modelBottom  =  model.getClip().getBoundingBox().y +
-                                model.getClip().getBoundingBox().height;
+            int modelBottom  =  model.getClip().getY() +
+                                model.getClip().getHeight();
             int indexNoOverlap = rowStart + 1;
 
             // Search for the first clip that does not overlap with the model
