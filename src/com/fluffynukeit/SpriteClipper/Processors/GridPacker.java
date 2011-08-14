@@ -43,6 +43,11 @@ import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.List;
 
+/*
+ * Thanks to Paul Miller for the suggestion to add this packing method.
+ */
+
+
 /**
  *
  * @author Daniel Austin <dan@fluffynukeit.com>
