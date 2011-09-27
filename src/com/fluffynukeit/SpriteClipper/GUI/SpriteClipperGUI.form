@@ -65,7 +65,7 @@
                   <Component id="jPanel1" max="32767" attributes="1"/>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
-              <Component id="spriteSheetScrollPane" alignment="0" pref="662" max="32767" attributes="3"/>
+              <Component id="spriteSheetScrollPane" alignment="0" pref="674" max="32767" attributes="3"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
@@ -128,7 +128,7 @@
                           </Group>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jPanel2" min="-2" pref="81" max="-2" attributes="0"/>
+                      <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="storeClipsButton" linkSize="11" min="-2" pref="55" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -335,6 +335,8 @@
                               <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
                                   <Group type="102" alignment="0" attributes="1">
                                       <Component id="clRadioButton" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="ccRadioButton" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="32767" attributes="0"/>
                                       <Component id="crRadioButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
@@ -370,6 +372,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="clRadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Component id="crRadioButton" alignment="0" min="-2" max="-2" attributes="0"/>
+                              <Component id="ccRadioButton" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
@@ -425,6 +428,12 @@
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JRadioButton" name="bcRadioButton">
+                  <Properties>
+                    <Property name="enabled" type="boolean" value="false"/>
+                    <Property name="focusable" type="boolean" value="false"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JRadioButton" name="ccRadioButton">
                   <Properties>
                     <Property name="enabled" type="boolean" value="false"/>
                     <Property name="focusable" type="boolean" value="false"/>

@@ -46,7 +46,6 @@ import java.awt.event.KeyListener;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -85,6 +84,7 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
         rsAnchorGroup.add(blRadioButton);
         rsAnchorGroup.add(bcRadioButton);
         rsAnchorGroup.add(brRadioButton);
+        rsAnchorGroup.add(ccRadioButton);
         rsAnchorGroup.setSelected(blRadioButton.getModel(), true);
 
         connSelector.setSelectedIndex(1);
@@ -232,6 +232,7 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
         brRadioButton = new javax.swing.JRadioButton();
         blRadioButton = new javax.swing.JRadioButton();
         bcRadioButton = new javax.swing.JRadioButton();
+        ccRadioButton = new javax.swing.JRadioButton();
         storedPanel = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         clippedList = new javax.swing.JList();
@@ -391,6 +392,9 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
         bcRadioButton.setEnabled(false);
         bcRadioButton.setFocusable(false);
 
+        ccRadioButton.setEnabled(false);
+        ccRadioButton.setFocusable(false);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -400,6 +404,8 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
                             .addComponent(clRadioButton)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(ccRadioButton)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(crRadioButton))
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
@@ -426,7 +432,8 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
                 .addGap(6, 6, 6)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(clRadioButton)
-                    .addComponent(crRadioButton))
+                    .addComponent(crRadioButton)
+                    .addComponent(ccRadioButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(bcRadioButton)
@@ -465,7 +472,7 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(mergeButton, javax.swing.GroupLayout.DEFAULT_SIZE, 74, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(storeClipsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -526,7 +533,7 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
-            .addComponent(spriteSheetScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 662, Short.MAX_VALUE)
+            .addComponent(spriteSheetScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
         );
         sheetPanelLayout.setVerticalGroup(
             sheetPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -749,8 +756,10 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
                 anchor = SpriteClip.AnchorType.BL;
             }else if (selectedModel == bcRadioButton.getModel()) {
                 anchor = SpriteClip.AnchorType.BC;
-            }else {
+            }else if (selectedModel == brRadioButton.getModel()) {
                 anchor = SpriteClip.AnchorType.BR;
+            }else {
+                anchor = SpriteClip.AnchorType.CC;
             }
 
             spriteClipper.reshapeSprites(ssPane.getSelectedClips(), anchor);
@@ -831,6 +840,7 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
         trRadioButton.setEnabled(bool);
         tcRadioButton.setEnabled(bool);
         tlRadioButton.setEnabled(bool);
+        ccRadioButton.setEnabled(bool);
     }
 
     private void setSaveControlsEnabled(boolean bool) {
@@ -934,6 +944,7 @@ public class SpriteClipperGUI extends javax.swing.JFrame implements Observer,
     private javax.swing.JRadioButton bcRadioButton;
     private javax.swing.JRadioButton blRadioButton;
     private javax.swing.JRadioButton brRadioButton;
+    private javax.swing.JRadioButton ccRadioButton;
     private javax.swing.JRadioButton clRadioButton;
     private javax.swing.JList clippedList;
     private javax.swing.JButton closeButton;

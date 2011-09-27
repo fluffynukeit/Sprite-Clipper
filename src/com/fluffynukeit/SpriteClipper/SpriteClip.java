@@ -59,7 +59,7 @@ public final class SpriteClip {
     private BufferedImage parentImage;
 
     public static enum AnchorType {
-        TL, TC, TR, CL, CR, BL, BC, BR; /* reshape anchors */
+        TL, TC, TR, CL, CR, BL, BC, BR, CC; /* reshape anchors */
     }
 
     public SpriteClip(BufferedImage _parentImage, int row, int col, String _name) {
@@ -200,6 +200,7 @@ public final class SpriteClip {
                 break;
             case CL:
             case CR:
+            case CC:
                 anchorY = centerY();
                 shiftUp = (int) (newHeight/2.0);
                 shiftDown = newHeight - shiftUp - 1;
@@ -222,6 +223,7 @@ public final class SpriteClip {
                 break;
             case TC:
             case BC:
+            case CC:
                 anchorX = centerX();
                 shiftLeft = (int) (newWidth/2.0);
                 shiftRight = newWidth - shiftLeft - 1;
