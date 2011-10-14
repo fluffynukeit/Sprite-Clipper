@@ -6,8 +6,15 @@
 package com.fluffynukeit.SpriteClipper.GUI;
 
 import com.fluffynukeit.SpriteClipper.*;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,10 +30,13 @@ import javax.swing.JLayeredPane;
  *
  * @author Daniel Austin <dan@fluffynukeit.com>
  */
-public class SpriteSheetPane extends JLayeredPane {
+public class SpriteSheetPane extends JLayeredPane implements MouseListener,
+                                                             MouseMotionListener{
 
     public static final int IMAGE_LAYER = JLayeredPane.DEFAULT_LAYER;
     public static final int CLIP_LAYER = JLayeredPane.PALETTE_LAYER;
+    private Point selectionStart = new Point();
+    private Rectangle selectionRectangle = null;
 
     public SpriteSheetPane(SpriteSheet spriteSheet) {
 
@@ -41,6 +51,8 @@ public class SpriteSheetPane extends JLayeredPane {
 
         add(label);
         setLayer(label, IMAGE_LAYER);
+        addMouseListener(this);
+        addMouseMotionListener(this);
 
     }
 
@@ -63,9 +75,13 @@ public class SpriteSheetPane extends JLayeredPane {
 
     }
 
+    public Component[] getSpriteMarkerArray(){
+        return getComponentsInLayer(CLIP_LAYER);
+    }
+
     public void clearMarkers() {
         /* First clear any markers already here */
-        Component[] currentMarkers = getComponentsInLayer(CLIP_LAYER);
+        Component[] currentMarkers = getSpriteMarkerArray();
 
         for (Component marker : currentMarkers) {
             remove(getIndexOf(marker));
@@ -90,7 +106,7 @@ public class SpriteSheetPane extends JLayeredPane {
     }
 
     public List<SpriteClip> getSelectedClips() {
-        Component[] components = getComponentsInLayer(CLIP_LAYER);
+        Component[] components = getSpriteMarkerArray();
 
         List<SpriteMarker> selectedList = new ArrayList();
 
@@ -111,7 +127,7 @@ public class SpriteSheetPane extends JLayeredPane {
     }
 
     private Component[] looselySortComponents() {
-        Component[] components = getComponentsInLayer(CLIP_LAYER);
+        Component[] components = getSpriteMarkerArray();
 
         // Set up some sorters
         Comparator<Component> byY = new Comparator<Component>() {
@@ -153,6 +169,50 @@ public class SpriteSheetPane extends JLayeredPane {
         }
         return components;
 
+    }
+
+    @Override
+    public void paint(Graphics g){
+        super.paint(g);
+        if (selectionRectangle != null){
+            g.setColor(Color.BLACK);
+            g.drawRect(selectionRectangle.x, selectionRectangle.y,
+                    selectionRectangle.width-1, selectionRectangle.height-1);
+        }
+    }
+
+    public void mouseClicked(MouseEvent event) {
+        selectionStart = event.getPoint();
+    }
+    public void mouseEntered(MouseEvent event) {
+    }
+    public void mouseExited(MouseEvent event) {
+    }
+    public void mousePressed(MouseEvent event) {
+        selectionStart = event.getPoint();
+        mouseDragged(event);
+    }
+    public void mouseReleased(MouseEvent event) {
+        selectionRectangle = null;
+        repaint();
+    }
+    public void mouseMoved(MouseEvent event){
+    }
+    public void mouseDragged(MouseEvent event){
+        selectionRectangle = new Rectangle(selectionStart);
+        selectionRectangle.add(event.getPoint());
+
+        /*
+         * Now find the right SpriteMarkers and set them as selected.
+         */
+        Component[] components = getSpriteMarkerArray();
+        for (Component curComponent : components){
+            SpriteMarker curMarker = (SpriteMarker) curComponent;
+            boolean overlaps = selectionRectangle.intersects(curMarker.getClip().getBoundingBox());
+            curMarker.setSelected(overlaps);
+        }
+
+        repaint();
     }
 
 }
