@@ -72,7 +72,7 @@ public class SpriteSheet {
 
     public void mergeClips(Collection<SpriteClip> mergeClips) {
 
-        if (mergeClips == null) {
+        if (mergeClips == null || mergeClips.size() == 0) {
             return;
         }
 
